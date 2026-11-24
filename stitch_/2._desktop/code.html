@@ -1,0 +1,438 @@
+<!DOCTYPE html><html lang="uk" class="dark"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Генератор документів на БВПД — Головна форма (Темна)</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-hover': '#152C4A',
+        'primary-tint': '#EBF2FA',
+        'primary-border-tint': '#BFDBFE',
+        'success': '#166534',
+        'success-container': '#ECFDF5',
+        'success-border': '#86EFAC',
+        'neutral-badge': '#475569',
+        'neutral-badge-container': '#F1F5F9',
+        'neutral-badge-border': '#CBD5E1',
+        'error': '#B91C1C',
+        'on-error': '#FFFFFF',
+        'error-bright': '#DC2626',
+        'error-container': '#FEF2F2',
+        'error-border': '#FCA5A5',
+        'warning': '#B45309',
+        'warning-container': '#FFFBEB',
+        'warning-border': '#FCD34D',
+        'ai': '#1D4ED8',
+        'ai-container': '#EFF6FF',
+        'ai-border': '#BFDBFE',
+        'paper-dark-stage': '#0B1120',
+        'paper-dark-ink': '#111827',
+        'dark-success': '#86EFAC',
+        'dark-success-container': '#122B23',
+        'dark-success-border': '#22C55E',
+        'dark-neutral-badge': '#CBD5E1',
+        'dark-neutral-badge-container': '#263244',
+        'dark-neutral-badge-border': '#475569',
+        'dark-error': '#FCA5A5',
+        'dark-error-container': '#311820',
+        'dark-error-border': '#EF4444',
+        'dark-warning': '#FCD34D',
+        'dark-warning-container': '#2C2314',
+        'dark-warning-border': '#B45309',
+        'dark-ai': '#93C5FD',
+        'dark-ai-container': '#172554',
+        'dark-ai-border': '#3B82F6',
+        'light-primary': '#1E3A5F',
+        'light-on-primary': '#FFFFFF',
+        'light-secondary': '#334155',
+        'light-on-secondary': '#FFFFFF',
+        'light-background': '#F4F6F9',
+        'light-on-background': '#0F172A',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#0F172A',
+        'light-surface-subtle': '#F8FAFC',
+        'light-surface-readonly': '#F1F5F9',
+        'light-on-surface-secondary': '#475569',
+        'light-on-surface-muted': '#94A3B8',
+        'light-on-surface-readonly': '#627188',
+        'light-border': '#E2E8F0',
+        'light-border-input': '#CBD5E1',
+        'dark-primary': '#60A5FA',
+        'dark-on-primary': '#0F172A',
+        'dark-primary-fill': '#3B82F6',
+        'dark-on-primary-fill': '#0F172A',
+        'dark-secondary': '#CBD5E1',
+        'dark-on-secondary': '#0F172A',
+        'dark-background': '#0F172A',
+        'dark-on-background': '#F1F5F9',
+        'dark-surface': '#1E293B',
+        'dark-on-surface': '#F1F5F9',
+        'dark-surface-subtle': '#162032',
+        'dark-surface-raised': '#253349',
+        'dark-surface-readonly': '#172234',
+        'dark-on-surface-secondary': '#CBD5E1',
+        'dark-on-surface-muted': '#94A3B8',
+        'dark-on-surface-readonly': '#94A3B8',
+        'dark-border': '#334155',
+        'dark-border-input': '#475569',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '8px',
+        'md': '10px',
+        'lg': '12px',
+        'sheet': '20px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '16px',
+        'gutter-card': '20px',
+        'gutter-lg': '24px',
+        'gutter-xl': '32px',
+      },
+      fontFamily: {
+        'headline': ['"Inter"', 'sans-serif'],
+        'section': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'doc': ['"Tinos"', 'sans-serif'],
+      },
+      fontSize: {
+        'headline-lg': ['21px', { lineHeight: '28px', letterSpacing: '-0.3px', fontWeight: '600' }],
+        'headline-sm': ['16px', { lineHeight: '22px', letterSpacing: '-0.1px', fontWeight: '600' }],
+        'section-title': ['14px', { lineHeight: '20px', letterSpacing: '0.2px', fontWeight: '700' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-sm': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+        'label-sm': ['12px', { lineHeight: '16px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'doc-heading': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '700' }],
+        'doc-body': ['15px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '400' }],
+      },
+      transitionDuration: {
+        'state-change': '120ms',
+        'surface-enter': '200ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Tinos:wght@400;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-dark-background text-dark-on-background font-body antialiased">
+  <div class="min-h-[1024px] flex flex-col pb-24" data-stitch-vh="min-h-[1024px]===min-h-screen">
+    <!-- Sticky Top Application Bar (Dark Mode) -->
+    <header class="sticky top-0 z-30 h-16 bg-dark-surface border-b border-dark-border shadow-sm">
+      <div class="max-w-7xl mx-auto h-full px-gutter-lg flex items-center justify-between gap-gutter-md">
+        <div class="flex items-center gap-gutter-sm min-w-0">
+          <div class="w-9 h-9 shrink-0 rounded bg-dark-surface-subtle border border-dark-border flex items-center justify-center text-dark-primary">
+            <svg width="20" height="24" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 2L14 7.5V16.5L17.5 13V7.5L20 5V16.5C20 19.5 17 21.5 14 22.5V26L12 28L10 26V22.5C7 21.5 4 19.5 4 16.5V5L6.5 7.5V13L10 16.5V7.5L12 2Z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"></path>
+              <path d="M7 18.5H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+            </svg>
+          </div>
+          <div class="flex items-center gap-gutter-sm min-w-0">
+            <h1 class="font-headline text-headline-lg text-dark-on-surface truncate">Генератор документів на БВПД</h1>
+            <span class="hidden sm:inline-flex shrink-0 items-center px-gutter-sm py-gutter-xs rounded-full bg-dark-ai-container border border-dark-ai-border font-label text-label-sm text-dark-primary">Система БВПД</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-gutter-sm shrink-0">
+          <button type="button" class="inline-flex items-center gap-gutter-xs px-gutter-sm py-gutter-xs h-9 rounded bg-dark-surface hover:bg-dark-surface-raised text-dark-secondary border border-dark-border">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">upload_file</span>
+            <span class="font-label text-label-md hidden xl:inline">Імпорт профілю</span>
+          </button>
+          <button type="button" class="inline-flex items-center gap-gutter-xs px-gutter-sm py-gutter-xs h-9 rounded bg-dark-surface hover:bg-dark-surface-raised text-dark-secondary border border-dark-border">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">download</span>
+            <span class="font-label text-label-md hidden xl:inline">Експорт профілю</span>
+          </button>
+          <button type="button" class="inline-flex items-center gap-gutter-xs px-gutter-sm py-gutter-xs h-9 rounded bg-dark-ai-container text-dark-ai border border-dark-ai-border">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">auto_awesome</span>
+            <span class="font-label text-label-md hidden xl:inline">Налаштування ШІ</span>
+            <span class="w-2 h-2 rounded-full bg-dark-success" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="inline-flex items-center gap-gutter-xs px-gutter-sm py-gutter-xs h-9 rounded bg-dark-surface hover:bg-dark-error-container text-dark-error border border-dark-error-border">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">restart_alt</span>
+            <span class="font-label text-label-md hidden sm:inline">Скинути дані</span>
+          </button>
+
+          <span class="hidden md:block w-px h-6 bg-dark-border" aria-hidden="true"></span>
+
+          <div role="group" aria-label="Перемкнути тему" class="inline-flex items-center p-0.5 rounded-full bg-dark-background border border-dark-border h-9">
+            <button type="button" class="inline-flex items-center gap-1 px-gutter-sm h-7 rounded-full text-dark-on-surface-secondary hover:text-dark-on-surface font-label text-label-sm">
+              <span class="material-symbols-outlined text-base" aria-hidden="true">light_mode</span>
+              <span>Світла</span>
+            </button>
+            <button type="button" class="inline-flex items-center gap-1 px-gutter-sm h-7 rounded-full bg-dark-surface text-dark-primary border border-dark-border font-label text-label-sm">
+              <span class="material-symbols-outlined text-base" aria-hidden="true">dark_mode</span>
+              <span>Темна</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 3-Zone Desktop Workspace (Dark Mode) -->
+    <div class="max-w-7xl w-full mx-auto px-gutter-lg py-gutter-lg grid grid-cols-1 lg:grid-cols-[230px_minmax(0,1fr)_320px] gap-gutter-lg items-start">
+      <!-- Left Sticky Section Navigation Rail -->
+      <aside class="hidden lg:block sticky top-20 bg-dark-surface border border-dark-border rounded-lg p-gutter-sm">
+        <nav aria-label="Навігація по секціях" class="flex flex-col gap-gutter-xs">
+          <a href="#" class="flex items-center justify-between px-gutter-sm py-gutter-xs rounded text-dark-on-surface-secondary hover:bg-dark-surface-raised font-body text-body-sm">
+            <span>Регіональний центр</span>
+            <span class="material-symbols-outlined text-base text-dark-success">check_circle</span>
+          </a>
+          <a href="#" class="flex items-center justify-between px-gutter-sm py-gutter-xs rounded text-dark-on-surface-secondary hover:bg-dark-surface-raised font-body text-body-sm">
+            <span>1. Дані заявника</span>
+            <span class="material-symbols-outlined text-base text-dark-success">check_circle</span>
+          </a>
+          <a href="#" class="flex items-center justify-between px-gutter-sm py-gutter-xs rounded text-dark-on-surface-secondary hover:bg-dark-surface-raised font-body text-body-sm">
+            <span>2. Суть звернення</span>
+            <span class="material-symbols-outlined text-base text-dark-success">check_circle</span>
+          </a>
+          <a href="#" class="flex items-center justify-between px-gutter-sm py-gutter-xs rounded text-dark-on-surface-secondary hover:bg-dark-surface-raised font-body text-body-sm">
+            <span>3. Доходи</span>
+            <span class="px-1.5 py-0.5 rounded-full bg-dark-neutral-badge-container text-dark-neutral-badge font-label text-label-sm">п. 1</span>
+          </a>
+          <a href="#" class="flex items-center justify-between px-gutter-sm py-gutter-xs rounded text-dark-on-surface-secondary hover:bg-dark-surface-raised font-body text-body-sm">
+            <span>4. Додатки</span>
+          </a>
+          <a href="#" class="flex items-center justify-between px-gutter-sm py-gutter-xs rounded text-dark-on-surface-secondary hover:bg-dark-surface-raised font-body text-body-sm">
+            <span>5. Підпис</span>
+          </a>
+          <a href="#sec-6" class="flex items-center justify-between px-gutter-sm py-gutter-xs rounded bg-dark-error-container text-dark-error border-l-2 border-dark-error font-label text-label-md">
+            <span>6. Службові відмітки</span>
+            <span class="material-symbols-outlined text-base">error</span>
+          </a>
+          <a href="#sec-7" class="flex items-center justify-between px-gutter-sm py-gutter-xs rounded text-dark-on-surface-secondary hover:bg-dark-surface-raised font-body text-body-sm">
+            <span>7. Накази</span>
+          </a>
+          <a href="#sec-8" class="flex items-center justify-between px-gutter-sm py-gutter-xs rounded bg-dark-ai-container text-dark-primary border-l-2 border-dark-primary font-label text-label-md">
+            <span>8. Службовий лист</span>
+          </a>
+          <a href="#sec-9" class="flex items-center justify-between px-gutter-sm py-gutter-xs rounded text-dark-on-surface-secondary hover:bg-dark-surface-raised font-body text-body-sm">
+            <span>9. Налаштування (Герб)</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Center Main Form Column: Operational Sections 6–9 + Dark AI Modal -->
+      <main class="max-w-3xl w-full mx-auto flex flex-col gap-gutter-card">
+        <!-- Card 6: 6. Службові відмітки (with Validation Error on № РКЗК) -->
+        <section id="sec-6" class="bg-dark-surface border border-dark-border rounded-lg p-gutter-lg flex flex-col gap-gutter-md">
+          <header class="flex items-center gap-gutter-sm pb-gutter-md border-b border-dark-border">
+            <span class="px-gutter-sm py-gutter-xs rounded-sm bg-dark-ai-container text-dark-primary font-label text-label-sm">06</span>
+            <h2 class="font-section text-section-title text-dark-primary uppercase">6. Службові відмітки</h2>
+          </header>
+
+          <label class="flex flex-col gap-gutter-xs">
+            <span class="font-label text-label-md text-dark-secondary">ПІБ працівника, який прийняв заяву (у називному) <span class="text-dark-error">*</span></span>
+            <input type="text" value="Петров Петро Петрович" class="h-10 px-gutter-sm rounded bg-dark-background border border-dark-border-input font-body text-body-md text-dark-on-surface">
+          </label>
+
+          <div class="bg-dark-surface-subtle border border-dark-border rounded-md p-gutter-md">
+            <label class="flex flex-col gap-gutter-xs">
+              <span class="font-label text-label-sm text-dark-primary">Родовий відмінок (Кого? — для службових):</span>
+              <input type="text" value="Петрова Петра Петровича" class="h-10 px-gutter-sm rounded bg-dark-background border border-dark-border-input font-body text-body-sm text-dark-on-surface">
+            </label>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter-md">
+            <label class="flex flex-col gap-gutter-xs">
+              <span class="font-label text-label-md text-dark-secondary">№ РКЗК <span class="text-dark-error">*</span></span>
+              <input type="text" value placeholder="Наприклад: 2026-1234568" aria-invalid="true" class="h-10 px-gutter-sm rounded bg-dark-background border-2 border-dark-error font-body text-body-md text-dark-on-surface placeholder:text-dark-on-surface-muted">
+              <span class="font-body text-body-sm text-dark-error">Вкажіть номер РКЗК</span>
+            </label>
+            <label class="flex flex-col gap-gutter-xs">
+              <span class="font-label text-label-md text-dark-secondary">Реєстраційний номер звернення</span>
+              <input type="text" value="123/4ОБ" class="h-10 px-gutter-sm rounded bg-dark-background border border-dark-border-input font-body text-body-md text-dark-on-surface">
+            </label>
+            <label class="flex flex-col gap-gutter-xs">
+              <span class="font-label text-label-md text-dark-secondary">Дата реєстрації звернення</span>
+              <input type="date" value="2026-11-22" class="h-10 px-gutter-sm rounded bg-dark-background border border-dark-border-input font-body text-body-md text-dark-on-surface tabular-nums">
+            </label>
+          </div>
+        </section>
+
+        <!-- Card 7: 7. Накази -->
+        <section id="sec-7" class="bg-dark-surface border border-dark-border rounded-lg p-gutter-lg flex flex-col gap-gutter-md">
+          <header class="flex items-center gap-gutter-sm pb-gutter-md border-b border-dark-border">
+            <span class="px-gutter-sm py-gutter-xs rounded-sm bg-dark-ai-container text-dark-primary font-label text-label-sm">07</span>
+            <h2 class="font-section text-section-title text-dark-primary uppercase">7. Накази</h2>
+          </header>
+          <label class="flex flex-col gap-gutter-xs">
+            <span class="font-label text-label-md text-dark-secondary">Підписант</span>
+            <select class="h-10 px-gutter-sm rounded bg-dark-background border border-dark-border-input font-body text-body-md text-dark-on-surface">
+              <option selected>Сергій МЕРЗЛЯКОВ</option>
+              <option>Сергій КУДРЯВЦЕВ</option>
+            </select>
+          </label>
+        </section>
+
+        <!-- Card 8: 8. Службовий лист + AI Controls -->
+        <section id="sec-8" class="bg-dark-surface border border-dark-border rounded-lg p-gutter-lg flex flex-col gap-gutter-md">
+          <header class="flex items-center gap-gutter-sm pb-gutter-md border-b border-dark-border">
+            <span class="px-gutter-sm py-gutter-xs rounded-sm bg-dark-ai-container text-dark-primary font-label text-label-sm">08</span>
+            <h2 class="font-section text-section-title text-dark-primary uppercase">8. Службовий лист</h2>
+          </header>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter-md">
+            <label class="flex flex-col gap-gutter-xs">
+              <span class="font-label text-label-md text-dark-secondary">Посада працівника</span>
+              <select class="h-10 px-gutter-sm rounded bg-dark-background border border-dark-border-input font-body text-body-md text-dark-on-surface">
+                <option>помічник юриста</option>
+                <option selected>юрист</option>
+                <option>начальник</option>
+              </select>
+            </label>
+            <label class="flex flex-col gap-gutter-xs">
+              <span class="font-label text-label-md text-dark-secondary">Назва бюро</span>
+              <select class="h-10 px-gutter-sm rounded bg-dark-background border border-dark-border-input font-body text-body-md text-dark-on-surface">
+                <option selected>Одеського бюро правничої допомоги №1</option>
+                <option>Одеського бюро правничої допомоги №3</option>
+                <option>Одеського бюро правничої допомоги №4</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-gutter-sm pt-gutter-xs">
+            <div class="flex items-center gap-gutter-xs">
+              <span class="font-label text-label-md text-dark-secondary">Зазначити додаткову інформацію (тільки для службового листа на адвоката)</span>
+              <button type="button" title="Як налаштувати ШІ?" class="w-6 h-6 rounded-full bg-dark-ai-container text-dark-ai border border-dark-ai-border inline-flex items-center justify-center font-label text-label-sm">?</button>
+            </div>
+            <div class="flex items-center gap-gutter-xs">
+              <button type="button" class="inline-flex items-center gap-1 px-gutter-sm h-8 rounded bg-dark-ai-container border border-dark-ai-border text-dark-ai font-label text-label-sm">
+                <span class="material-symbols-outlined text-base">auto_awesome</span>
+                <span>Офіційно</span>
+              </button>
+              <button type="button" class="inline-flex items-center gap-1 px-gutter-sm h-8 rounded bg-dark-ai-container border border-dark-ai-border text-dark-ai font-label text-label-sm">
+                <span class="material-symbols-outlined text-base">edit_note</span>
+                <span>Коректор</span>
+              </button>
+            </div>
+          </div>
+          <textarea rows="3" class="p-gutter-sm rounded bg-dark-background border border-dark-border-input font-body text-body-md text-dark-on-surface">Справа потребує невідкладної підготовки позовної заяви та витребування архівних документів щодо реєстрації місця проживання.</textarea>
+        </section>
+
+        <!-- Card 9: 9. Налаштування (Герб) -->
+        <section id="sec-9" class="bg-dark-surface border border-dark-warning-border rounded-lg p-gutter-lg flex flex-col gap-gutter-md">
+          <header class="flex items-center gap-gutter-sm pb-gutter-md border-b border-dark-border">
+            <span class="px-gutter-sm py-gutter-xs rounded-sm bg-dark-warning-container text-dark-warning font-label text-label-sm">09</span>
+            <h2 class="font-section text-section-title text-dark-warning uppercase">9. Налаштування (Герб)</h2>
+          </header>
+          <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-gutter-md items-center">
+            <div class="border border-dashed border-dark-border-input rounded-md p-gutter-md text-center bg-dark-background">
+              <p class="font-body text-body-sm text-dark-on-surface-secondary">Перетягніть файл герба сюди (png, jpg)</p>
+            </div>
+            <div class="flex items-center gap-gutter-sm bg-dark-surface-subtle border border-dark-border rounded-md p-gutter-sm">
+              <svg width="24" height="30" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-dark-warning" aria-label="Активний герб">
+                <path d="M12 2L14 7.5V16.5L17.5 13V7.5L20 5V16.5C20 19.5 17 21.5 14 22.5V26L12 28L10 26V22.5C7 21.5 4 19.5 4 16.5V5L6.5 7.5V13L10 16.5V7.5L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path>
+                <path d="M7 18.5H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+              </svg>
+              <button type="button" class="px-gutter-sm py-1.5 rounded bg-dark-surface border border-dark-border text-dark-on-surface-secondary hover:text-dark-error font-label text-label-sm">Скинути герб до стандартного</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Dark Mode Reference: Gemini AI API Key Settings Modal -->
+        <section aria-label="Приклад модального вікна налаштувань ШІ у темній темі" class="bg-dark-surface border border-dark-border rounded-lg shadow-2xl overflow-hidden max-w-md w-full mx-auto">
+          <header class="flex items-center justify-between px-gutter-lg py-gutter-md border-b border-dark-border">
+            <div class="flex items-center gap-gutter-sm">
+              <span class="w-8 h-8 rounded bg-dark-ai-container border border-dark-ai-border text-dark-ai inline-flex items-center justify-center">
+                <span class="material-symbols-outlined text-lg">auto_awesome</span>
+              </span>
+              <h3 class="font-headline text-headline-sm text-dark-on-surface">Налаштування API-ключа ШІ (Gemini)</h3>
+            </div>
+            <button type="button" aria-label="Закрити" class="w-8 h-8 rounded inline-flex items-center justify-center text-dark-on-surface-secondary">
+              <span class="material-symbols-outlined text-lg">close</span>
+            </button>
+          </header>
+          <div class="p-gutter-lg flex flex-col gap-gutter-md">
+            <div class="flex items-center gap-gutter-xs px-gutter-sm py-gutter-xs rounded bg-dark-success-container border border-dark-success-border text-dark-success">
+              <span class="material-symbols-outlined text-base shrink-0">lock</span>
+              <span class="font-label text-label-sm">Ключ зберігається лише локально у вашому браузері; ПІБ клієнта анонімізується</span>
+            </div>
+            <label class="flex flex-col gap-gutter-xs">
+              <span class="font-label text-label-md text-dark-secondary">API-ключ Google Gemini</span>
+              <input type="password" value="AIzaSyD9xK8mP2qR7vL4nW1zT6yB" placeholder="Вставте ваш Gemini API-ключ..." class="h-10 px-gutter-sm rounded bg-dark-background border border-dark-border-input font-body text-body-md text-dark-on-surface">
+            </label>
+          </div>
+          <footer class="flex items-center justify-between px-gutter-lg py-gutter-md border-t border-dark-border bg-dark-surface-subtle">
+            <button type="button" class="px-gutter-sm py-gutter-xs rounded text-dark-error font-label text-label-md">Скинути ключ</button>
+            <button type="button" class="px-gutter-md py-gutter-xs rounded bg-dark-primary-fill text-dark-on-primary-fill font-label text-label-md font-semibold">Зберегти ключ</button>
+          </footer>
+        </section>
+      </main>
+
+      <!-- Right Sticky Document Actions Panel (Dark Mode) -->
+      <aside class="sticky top-20 bg-dark-surface border border-dark-border rounded-lg p-gutter-card shadow-sm">
+        <header class="pb-gutter-sm mb-gutter-md border-b border-dark-border">
+          <h2 class="font-headline text-headline-sm text-dark-on-surface">Формування документів</h2>
+        </header>
+        <div class="flex flex-col gap-gutter-md">
+          <div class="flex flex-col gap-gutter-sm">
+            <span class="font-label text-label-sm text-dark-on-surface-secondary uppercase">Основні документи клієнта</span>
+            <div class="flex items-center gap-gutter-xs">
+              <button type="button" aria-label="Попередній перегляд Заяви" class="w-10 h-10 shrink-0 rounded border border-dark-border-input bg-dark-background text-dark-primary inline-flex items-center justify-center"><span class="material-symbols-outlined text-lg">visibility</span></button>
+              <button type="button" class="flex-1 h-10 px-gutter-sm rounded bg-dark-primary-fill text-dark-on-primary-fill inline-flex items-center justify-center gap-gutter-xs font-label text-label-md font-semibold"><span class="material-symbols-outlined text-lg">description</span><span>Сформувати Заяву</span></button>
+            </div>
+            <div class="flex items-center gap-gutter-xs">
+              <button type="button" aria-label="Попередній перегляд Талону" class="w-10 h-10 shrink-0 rounded border border-dark-border-input bg-dark-background text-dark-primary inline-flex items-center justify-center"><span class="material-symbols-outlined text-lg">visibility</span></button>
+              <button type="button" class="flex-1 h-10 px-gutter-sm rounded bg-dark-primary-fill text-dark-on-primary-fill inline-flex items-center justify-center gap-gutter-xs font-label text-label-md font-semibold"><span class="material-symbols-outlined text-lg">confirmation_number</span><span>Сформувати Талон</span></button>
+            </div>
+          </div>
+          <hr class="border-dark-border">
+          <div class="flex flex-col gap-gutter-sm">
+            <span class="font-label text-label-sm text-dark-on-surface-secondary uppercase">Призначення адвоката</span>
+            <div class="flex items-center gap-gutter-xs">
+              <button type="button" aria-label="Попередній перегляд" class="w-10 h-10 shrink-0 rounded border border-dark-border-input bg-dark-background text-dark-primary inline-flex items-center justify-center"><span class="material-symbols-outlined text-lg">visibility</span></button>
+              <button type="button" class="flex-1 h-10 px-gutter-sm rounded border border-dark-primary bg-dark-surface text-dark-primary inline-flex items-center justify-center font-label text-label-md">Наказ на адвоката</button>
+            </div>
+            <div class="flex items-center gap-gutter-xs">
+              <button type="button" aria-label="Попередній перегляд" class="w-10 h-10 shrink-0 rounded border border-dark-border-input bg-dark-background text-dark-primary inline-flex items-center justify-center"><span class="material-symbols-outlined text-lg">visibility</span></button>
+              <button type="button" class="flex-1 h-10 px-gutter-sm rounded border border-dark-primary bg-dark-surface text-dark-primary inline-flex items-center justify-center font-label text-label-md">Службова на адвоката</button>
+            </div>
+          </div>
+          <hr class="border-dark-border">
+          <div class="flex flex-col gap-gutter-sm">
+            <span class="font-label text-label-sm text-dark-on-surface-secondary uppercase">Уповноваження працівника</span>
+            <div class="flex items-center gap-gutter-xs">
+              <button type="button" aria-label="Попередній перегляд" class="w-10 h-10 shrink-0 rounded border border-dark-border-input bg-dark-background text-dark-primary inline-flex items-center justify-center"><span class="material-symbols-outlined text-lg">visibility</span></button>
+              <button type="button" class="flex-1 h-10 px-gutter-sm rounded border border-dark-primary bg-dark-surface text-dark-primary inline-flex items-center justify-center font-label text-label-md">Наказ на працівника</button>
+            </div>
+            <div class="flex items-center gap-gutter-xs">
+              <button type="button" aria-label="Попередній перегляд" class="w-10 h-10 shrink-0 rounded border border-dark-border-input bg-dark-background text-dark-primary inline-flex items-center justify-center"><span class="material-symbols-outlined text-lg">visibility</span></button>
+              <button type="button" class="flex-1 h-10 px-gutter-sm rounded border border-dark-primary bg-dark-surface text-dark-primary inline-flex items-center justify-center font-label text-label-md">Службова на працівника</button>
+            </div>
+          </div>
+        </div>
+        <footer class="mt-gutter-md pt-gutter-sm border-t border-dark-border">
+          <p class="font-body text-body-sm text-dark-on-surface-muted">Формат експорту: .DOCX (ДСТУ / Times New Roman)</p>
+        </footer>
+      </aside>
+    </div>
+
+    <!-- Floating Bottom-Center Validation Toast (Dark Mode) -->
+    <div role="alert" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-gutter-lg py-gutter-sm rounded-full bg-dark-error-container border border-dark-error-border text-dark-error shadow-xl flex items-center gap-gutter-sm whitespace-nowrap">
+      <span class="material-symbols-outlined text-lg">error</span>
+      <span class="font-label text-label-md">Заповніть обов&#39;язкові поля!</span>
+    </div>
+  </div>
+
+
+</body></html>

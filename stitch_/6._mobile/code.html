@@ -1,0 +1,246 @@
+<!DOCTYPE html><html lang="uk" class="dark"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Генератор БВПД — Мобільна форма (Темна)</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-hover': '#152C4A',
+        'primary-tint': '#EBF2FA',
+        'primary-border-tint': '#BFDBFE',
+        'success': '#166534',
+        'success-container': '#ECFDF5',
+        'success-border': '#86EFAC',
+        'neutral-badge': '#475569',
+        'neutral-badge-container': '#F1F5F9',
+        'neutral-badge-border': '#CBD5E1',
+        'error': '#B91C1C',
+        'on-error': '#FFFFFF',
+        'error-bright': '#DC2626',
+        'error-container': '#FEF2F2',
+        'error-border': '#FCA5A5',
+        'warning': '#B45309',
+        'warning-container': '#FFFBEB',
+        'warning-border': '#FCD34D',
+        'ai': '#1D4ED8',
+        'ai-container': '#EFF6FF',
+        'ai-border': '#BFDBFE',
+        'paper-dark-stage': '#0B1120',
+        'paper-dark-ink': '#111827',
+        'dark-success': '#86EFAC',
+        'dark-success-container': '#122B23',
+        'dark-success-border': '#22C55E',
+        'dark-neutral-badge': '#CBD5E1',
+        'dark-neutral-badge-container': '#263244',
+        'dark-neutral-badge-border': '#475569',
+        'dark-error': '#FCA5A5',
+        'dark-error-container': '#311820',
+        'dark-error-border': '#EF4444',
+        'dark-warning': '#FCD34D',
+        'dark-warning-container': '#2C2314',
+        'dark-warning-border': '#B45309',
+        'dark-ai': '#93C5FD',
+        'dark-ai-container': '#172554',
+        'dark-ai-border': '#3B82F6',
+        'light-primary': '#1E3A5F',
+        'light-on-primary': '#FFFFFF',
+        'light-secondary': '#334155',
+        'light-on-secondary': '#FFFFFF',
+        'light-background': '#F4F6F9',
+        'light-on-background': '#0F172A',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#0F172A',
+        'light-surface-subtle': '#F8FAFC',
+        'light-surface-readonly': '#F1F5F9',
+        'light-on-surface-secondary': '#475569',
+        'light-on-surface-muted': '#94A3B8',
+        'light-on-surface-readonly': '#627188',
+        'light-border': '#E2E8F0',
+        'light-border-input': '#CBD5E1',
+        'dark-primary': '#60A5FA',
+        'dark-on-primary': '#0F172A',
+        'dark-primary-fill': '#3B82F6',
+        'dark-on-primary-fill': '#0F172A',
+        'dark-secondary': '#CBD5E1',
+        'dark-on-secondary': '#0F172A',
+        'dark-background': '#0F172A',
+        'dark-on-background': '#F1F5F9',
+        'dark-surface': '#1E293B',
+        'dark-on-surface': '#F1F5F9',
+        'dark-surface-subtle': '#162032',
+        'dark-surface-raised': '#253349',
+        'dark-surface-readonly': '#172234',
+        'dark-on-surface-secondary': '#CBD5E1',
+        'dark-on-surface-muted': '#94A3B8',
+        'dark-on-surface-readonly': '#94A3B8',
+        'dark-border': '#334155',
+        'dark-border-input': '#475569',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '8px',
+        'md': '10px',
+        'lg': '12px',
+        'sheet': '20px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '16px',
+        'gutter-card': '20px',
+        'gutter-lg': '24px',
+        'gutter-xl': '32px',
+      },
+      fontFamily: {
+        'headline': ['"Inter"', 'sans-serif'],
+        'section': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'doc': ['"Tinos"', 'sans-serif'],
+      },
+      fontSize: {
+        'headline-lg': ['21px', { lineHeight: '28px', letterSpacing: '-0.3px', fontWeight: '600' }],
+        'headline-sm': ['16px', { lineHeight: '22px', letterSpacing: '-0.1px', fontWeight: '600' }],
+        'section-title': ['14px', { lineHeight: '20px', letterSpacing: '0.2px', fontWeight: '700' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-sm': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+        'label-sm': ['12px', { lineHeight: '16px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'doc-heading': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '700' }],
+        'doc-body': ['15px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '400' }],
+      },
+      transitionDuration: {
+        'state-change': '120ms',
+        'surface-enter': '200ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Tinos:wght@400;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-dark-background text-dark-on-background font-body antialiased">
+  <div class="min-h-[884px] flex flex-col pb-32" data-stitch-vh="min-h-[884px]===min-h-screen">
+    <!-- Compact Sticky Mobile Header (Dark Mode) -->
+    <header class="sticky top-0 z-30 h-14 bg-dark-surface border-b border-dark-border px-gutter-md flex items-center justify-between gap-gutter-sm">
+      <div class="flex items-center gap-gutter-sm min-w-0">
+        <div class="w-8 h-8 shrink-0 rounded bg-dark-surface-subtle border border-dark-border flex items-center justify-center text-dark-primary">
+          <svg width="18" height="22" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 2L14 7.5V16.5L17.5 13V7.5L20 5V16.5C20 19.5 17 21.5 14 22.5V26L12 28L10 26V22.5C7 21.5 4 19.5 4 16.5V5L6.5 7.5V13L10 16.5V7.5L12 2Z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"></path>
+            <path d="M7 18.5H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+          </svg>
+        </div>
+        <h1 class="font-headline text-headline-sm text-dark-on-surface truncate">Генератор БВПД</h1>
+      </div>
+
+      <div class="flex items-center gap-1 shrink-0">
+        <button type="button" title="Перемкнути тему" aria-label="Перемкнути тему" class="w-11 h-11 rounded border border-dark-border bg-dark-background text-dark-warning inline-flex items-center justify-center">
+          <span class="material-symbols-outlined text-lg">light_mode</span>
+        </button>
+        <button type="button" title="Налаштування ШІ" aria-label="Налаштування ШІ" class="w-11 h-11 rounded border border-dark-border bg-dark-background text-dark-ai inline-flex items-center justify-center relative">
+          <span class="material-symbols-outlined text-lg">auto_awesome</span>
+          <span class="w-2 h-2 rounded-full bg-dark-success absolute top-2 right-2"></span>
+        </button>
+        <button type="button" title="Профіль та утиліти" aria-label="Меню профілю" class="w-11 h-11 rounded border border-dark-border bg-dark-background text-dark-secondary inline-flex items-center justify-center">
+          <span class="material-symbols-outlined text-lg">more_horiz</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Horizontally Scrollable Section Jump Bar -->
+    <nav aria-label="Секції форми" class="bg-dark-surface border-b border-dark-border px-gutter-md py-gutter-sm overflow-x-auto flex items-center gap-gutter-sm">
+      <a href="#" class="shrink-0 px-gutter-sm py-1.5 rounded-full bg-dark-background border border-dark-border font-label text-label-sm text-dark-on-surface-secondary">1. Заявник</a>
+      <a href="#md-sec-2" class="shrink-0 px-gutter-sm py-1.5 rounded-full bg-dark-primary-fill text-dark-on-primary-fill font-label text-label-sm font-semibold">2. Звернення</a>
+      <a href="#" class="shrink-0 px-gutter-sm py-1.5 rounded-full bg-dark-background border border-dark-border font-label text-label-sm text-dark-on-surface-secondary">6. Службові</a>
+      <a href="#md-sec-8" class="shrink-0 px-gutter-sm py-1.5 rounded-full bg-dark-ai-container border border-dark-ai-border font-label text-label-sm text-dark-ai">8. Лист</a>
+    </nav>
+
+    <!-- Single-Column Mobile Form (Dark Mode) -->
+    <main class="px-gutter-md py-gutter-md flex flex-col gap-gutter-md">
+      <!-- Card 2: Category Combobox -->
+      <section id="md-sec-2" class="bg-dark-surface border border-dark-border rounded-lg p-gutter-md flex flex-col gap-gutter-sm">
+        <div class="flex items-center gap-gutter-sm">
+          <span class="px-2 py-0.5 rounded-sm bg-dark-ai-container text-dark-primary font-label text-label-sm">02</span>
+          <h2 class="font-section text-section-title text-dark-primary uppercase">2. Суть звернення</h2>
+        </div>
+
+        <label class="flex flex-col gap-gutter-xs">
+          <span class="font-label text-label-md text-dark-secondary">Категорія суб&#39;єкта права <span class="text-dark-error">*</span></span>
+          <div class="relative">
+            <input type="text" value="п. 14 – Внутрішньо переміщені особи (ВПО)" class="w-full h-12 px-gutter-sm pr-10 rounded bg-dark-background border border-dark-border-input font-body text-base text-dark-on-surface">
+            <button type="button" aria-label="Очистити" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 inline-flex items-center justify-center text-dark-on-surface-secondary">
+              <span class="material-symbols-outlined text-lg">close</span>
+            </button>
+          </div>
+        </label>
+
+        <div class="bg-dark-ai-container border border-dark-ai-border rounded-md p-gutter-sm">
+          <p class="font-body text-body-sm text-dark-on-surface">
+            <strong>п. 14 ч. 1 ст. 14 Закону:</strong> внутрішньо переміщені особи — на всі види правничих послуг (підтверджується довідкою ВПО).
+          </p>
+        </div>
+      </section>
+
+      <!-- Card 8: Службовий лист + AI Buttons -->
+      <section id="md-sec-8" class="bg-dark-surface border border-dark-border rounded-lg p-gutter-md flex flex-col gap-gutter-sm">
+        <div class="flex items-center gap-gutter-sm">
+          <span class="px-2 py-0.5 rounded-sm bg-dark-ai-container text-dark-primary font-label text-label-sm">08</span>
+          <h2 class="font-section text-section-title text-dark-primary uppercase">8. Службовий лист</h2>
+        </div>
+
+        <span class="font-label text-label-md text-dark-secondary">Додаткова інформація (на адвоката)</span>
+
+        <!-- Equal-Width 2-Column AI Touch Bar (44px) -->
+        <div class="grid grid-cols-2 gap-gutter-sm">
+          <button type="button" class="h-11 rounded bg-dark-ai-container border border-dark-ai-border text-dark-ai font-label text-label-md inline-flex items-center justify-center gap-1">
+            <span class="material-symbols-outlined text-base">auto_awesome</span>
+            <span>Офіційно</span>
+          </button>
+          <button type="button" class="h-11 rounded bg-dark-ai-container border border-dark-ai-border text-dark-ai font-label text-label-md inline-flex items-center justify-center gap-1">
+            <span class="material-symbols-outlined text-base">edit_note</span>
+            <span>Коректор</span>
+          </button>
+        </div>
+
+        <textarea rows="3" class="p-gutter-sm rounded bg-dark-background border border-dark-border-input font-body text-base text-dark-on-surface">Справа потребує невідкладної підготовки позовної заяви та витребування архівних документів.</textarea>
+      </section>
+    </main>
+
+    <!-- Floating Validation Toast (16px above Sticky Bottom Bar) -->
+    <div role="alert" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 px-gutter-md py-2 rounded-full bg-dark-error-container border border-dark-error-border text-dark-error shadow-xl flex items-center gap-1.5 whitespace-nowrap">
+      <span class="material-symbols-outlined text-base">error</span>
+      <span class="font-label text-label-sm">Заповніть обов&#39;язкові поля!</span>
+    </div>
+
+    <!-- Sticky Mobile Bottom Action Bar (Dark Mode) -->
+    <footer class="fixed bottom-0 inset-x-0 z-40 bg-dark-surface border-t border-dark-border px-gutter-md py-gutter-sm flex items-center gap-gutter-sm shadow-lg">
+      <button type="button" class="w-5/12 h-12 rounded border border-dark-primary bg-dark-background text-dark-primary font-label text-label-md inline-flex items-center justify-center gap-1">
+        <span class="material-symbols-outlined text-lg">visibility</span>
+        <span>Перегляд</span>
+      </button>
+      <button type="button" class="w-7/12 h-12 rounded bg-dark-primary-fill text-dark-on-primary-fill font-label text-label-md font-semibold inline-flex items-center justify-center gap-1">
+        <span class="material-symbols-outlined text-lg">description</span>
+        <span>Документи (6) ▴</span>
+      </button>
+    </footer>
+  </div>
+
+
+</body></html>

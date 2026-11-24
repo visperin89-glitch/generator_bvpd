@@ -1,0 +1,26 @@
+# OS & System files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.lnk
+
+# Secrets & Environment
+.env
+.env.local
+.env.*.local
+
+# Temporary files & Logs
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# Generated QA test documents & Dependencies
+output_docs/
+node_modules/
+
+# IDE & Editor folders
+.vscode/
+.idea/

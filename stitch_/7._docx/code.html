@@ -1,0 +1,261 @@
+<!DOCTYPE html><html lang="uk"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Генератор БВПД — Мобільний калькулятор доходів і шторка DOCX</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-hover': '#152C4A',
+        'primary-tint': '#EBF2FA',
+        'primary-border-tint': '#BFDBFE',
+        'success': '#166534',
+        'success-container': '#ECFDF5',
+        'success-border': '#86EFAC',
+        'neutral-badge': '#475569',
+        'neutral-badge-container': '#F1F5F9',
+        'neutral-badge-border': '#CBD5E1',
+        'error': '#B91C1C',
+        'on-error': '#FFFFFF',
+        'error-bright': '#DC2626',
+        'error-container': '#FEF2F2',
+        'error-border': '#FCA5A5',
+        'warning': '#B45309',
+        'warning-container': '#FFFBEB',
+        'warning-border': '#FCD34D',
+        'ai': '#1D4ED8',
+        'ai-container': '#EFF6FF',
+        'ai-border': '#BFDBFE',
+        'paper-dark-stage': '#0B1120',
+        'paper-dark-ink': '#111827',
+        'dark-success': '#86EFAC',
+        'dark-success-container': '#122B23',
+        'dark-success-border': '#22C55E',
+        'dark-neutral-badge': '#CBD5E1',
+        'dark-neutral-badge-container': '#263244',
+        'dark-neutral-badge-border': '#475569',
+        'dark-error': '#FCA5A5',
+        'dark-error-container': '#311820',
+        'dark-error-border': '#EF4444',
+        'dark-warning': '#FCD34D',
+        'dark-warning-container': '#2C2314',
+        'dark-warning-border': '#B45309',
+        'dark-ai': '#93C5FD',
+        'dark-ai-container': '#172554',
+        'dark-ai-border': '#3B82F6',
+        'light-primary': '#1E3A5F',
+        'light-on-primary': '#FFFFFF',
+        'light-secondary': '#334155',
+        'light-on-secondary': '#FFFFFF',
+        'light-background': '#F4F6F9',
+        'light-on-background': '#0F172A',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#0F172A',
+        'light-surface-subtle': '#F8FAFC',
+        'light-surface-readonly': '#F1F5F9',
+        'light-on-surface-secondary': '#475569',
+        'light-on-surface-muted': '#94A3B8',
+        'light-on-surface-readonly': '#627188',
+        'light-border': '#E2E8F0',
+        'light-border-input': '#CBD5E1',
+        'dark-primary': '#60A5FA',
+        'dark-on-primary': '#0F172A',
+        'dark-primary-fill': '#3B82F6',
+        'dark-on-primary-fill': '#0F172A',
+        'dark-secondary': '#CBD5E1',
+        'dark-on-secondary': '#0F172A',
+        'dark-background': '#0F172A',
+        'dark-on-background': '#F1F5F9',
+        'dark-surface': '#1E293B',
+        'dark-on-surface': '#F1F5F9',
+        'dark-surface-subtle': '#162032',
+        'dark-surface-raised': '#253349',
+        'dark-surface-readonly': '#172234',
+        'dark-on-surface-secondary': '#CBD5E1',
+        'dark-on-surface-muted': '#94A3B8',
+        'dark-on-surface-readonly': '#94A3B8',
+        'dark-border': '#334155',
+        'dark-border-input': '#475569',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '8px',
+        'md': '10px',
+        'lg': '12px',
+        'sheet': '20px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '16px',
+        'gutter-card': '20px',
+        'gutter-lg': '24px',
+        'gutter-xl': '32px',
+      },
+      fontFamily: {
+        'headline': ['"Inter"', 'sans-serif'],
+        'section': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'doc': ['"Tinos"', 'sans-serif'],
+      },
+      fontSize: {
+        'headline-lg': ['21px', { lineHeight: '28px', letterSpacing: '-0.3px', fontWeight: '600' }],
+        'headline-sm': ['16px', { lineHeight: '22px', letterSpacing: '-0.1px', fontWeight: '600' }],
+        'section-title': ['14px', { lineHeight: '20px', letterSpacing: '0.2px', fontWeight: '700' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-sm': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+        'label-sm': ['12px', { lineHeight: '16px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'doc-heading': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '700' }],
+        'doc-body': ['15px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '400' }],
+      },
+      transitionDuration: {
+        'state-change': '120ms',
+        'surface-enter': '200ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Tinos:wght@400;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-background text-light-on-background font-body antialiased">
+  <div class="min-h-[884px] flex flex-col" data-stitch-vh="min-h-[884px]===min-h-screen">
+    <!-- Top Section: Mobile Extended Income Calculator (Vertical Accordion) -->
+    <main class="px-gutter-md py-gutter-md flex flex-col gap-gutter-md pb-8">
+      <section class="bg-light-surface border border-light-border rounded-lg p-gutter-md flex flex-col gap-gutter-md">
+        <header class="flex items-center justify-between gap-gutter-sm pb-gutter-sm border-b border-light-border">
+          <div class="flex items-center gap-gutter-sm">
+            <span class="px-2 py-0.5 rounded-sm bg-primary-tint text-light-primary font-label text-label-sm">03</span>
+            <h1 class="font-section text-section-title text-light-primary uppercase">3. Доходи</h1>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-error-container border border-error-border text-error font-label text-label-sm">Перевищення порогу</span>
+        </header>
+
+        <!-- Mode Switcher (44px) -->
+        <div class="grid grid-cols-2 p-1 rounded bg-light-surface-subtle border border-light-border gap-1">
+          <button type="button" class="h-10 rounded font-label text-label-sm text-light-on-surface-secondary">Простий</button>
+          <button type="button" class="h-10 rounded bg-light-surface border border-light-border text-light-primary font-label text-label-sm shadow-sm">Розширений (№ 1445/5)</button>
+        </div>
+
+        <!-- Accordion Month 1: Липень (EXPANDED) -->
+        <div class="border border-light-primary rounded-md overflow-hidden">
+          <div class="h-12 px-gutter-sm bg-primary-tint flex items-center justify-between gap-gutter-sm">
+            <span class="font-headline text-headline-sm text-light-primary">Липень ▾</span>
+            <span class="px-2 py-0.5 rounded-full bg-success-container border border-success-border text-success font-label text-label-sm tabular-nums">Враховано: 7 200,00 грн</span>
+          </div>
+          <div class="p-gutter-sm flex flex-col gap-gutter-sm bg-light-surface">
+            <!-- Row 1: 101 -->
+            <div class="bg-light-surface-subtle border border-light-border rounded p-gutter-sm flex flex-col gap-gutter-xs">
+              <div class="flex items-center gap-gutter-xs">
+                <select class="flex-1 min-w-0 h-12 px-gutter-sm rounded bg-light-surface border border-light-border-input font-body text-base truncate">
+                  <option selected>101 — Заробітна плата</option>
+                </select>
+                <button type="button" aria-label="Видалити" class="w-11 h-11 shrink-0 rounded bg-error-container text-error inline-flex items-center justify-center"><span class="material-symbols-outlined text-lg">close</span></button>
+              </div>
+              <input type="number" value="7200.00" placeholder="Сума (грн)" class="h-12 px-gutter-sm rounded bg-light-surface border border-light-border-input font-body text-base tabular-nums">
+              <div class="px-gutter-sm py-1.5 rounded bg-success-container border border-success-border text-success font-label text-label-sm tabular-nums">Враховується (+7 200,00 грн)</div>
+            </div>
+
+            <!-- Row 2: 128 -->
+            <div class="bg-light-surface-subtle border border-light-border rounded p-gutter-sm flex flex-col gap-gutter-xs">
+              <div class="flex items-center gap-gutter-xs">
+                <select class="flex-1 min-w-0 h-12 px-gutter-sm rounded bg-light-surface border border-light-border-input font-body text-base truncate">
+                  <option selected>128 — Допомога ВПО</option>
+                </select>
+                <button type="button" aria-label="Видалити" class="w-11 h-11 shrink-0 rounded bg-error-container text-error inline-flex items-center justify-center"><span class="material-symbols-outlined text-lg">close</span></button>
+              </div>
+              <input type="number" value="2000.00" placeholder="Сума (грн)" class="h-12 px-gutter-sm rounded bg-light-surface border border-light-border-input font-body text-base tabular-nums">
+              <div class="px-gutter-sm py-1.5 rounded bg-neutral-badge-container border border-neutral-badge-border text-neutral-badge font-label text-label-sm tabular-nums">Не враховується (0,00 грн)</div>
+            </div>
+
+            <button type="button" class="w-full h-11 rounded border border-light-border-input text-light-primary font-label text-label-md">+ Додати код доходу</button>
+          </div>
+        </div>
+
+        <!-- Accordion Month 2: Серпень (COLLAPSED) -->
+        <div class="border border-light-border rounded-md h-12 px-gutter-sm bg-light-surface-subtle flex items-center justify-between gap-gutter-sm">
+          <span class="font-headline text-headline-sm text-light-on-surface">Серпень ▸</span>
+          <span class="px-2 py-0.5 rounded-full bg-success-container border border-success-border text-success font-label text-label-sm tabular-nums">Враховано: 1 800,00 грн</span>
+        </div>
+
+        <!-- Accordion Month 3: Вересень (COLLAPSED) -->
+        <div class="border border-light-border rounded-md h-12 px-gutter-sm bg-light-surface-subtle flex items-center justify-between gap-gutter-sm">
+          <span class="font-headline text-headline-sm text-light-on-surface">Вересень ▸</span>
+          <span class="px-2 py-0.5 rounded-full bg-success-container border border-success-border text-success font-label text-label-sm tabular-nums">Враховано: 7 500,00 грн</span>
+        </div>
+      </section>
+    </main>
+
+    <!-- Opened Mobile Bottom Sheet: Формування документів -->
+    <section aria-label="Шторка формування документів" class="bg-light-surface border-t border-light-border rounded-t-sheet shadow-2xl px-gutter-md pt-gutter-sm pb-gutter-lg flex flex-col gap-gutter-md">
+      <!-- Drag Handle -->
+      <div class="w-10 h-1 rounded-full bg-light-border-input mx-auto"></div>
+
+      <header class="flex items-center justify-between pb-gutter-sm border-b border-light-border">
+        <h2 class="font-headline text-headline-sm text-light-on-surface">Формування документів</h2>
+        <button type="button" aria-label="Закрити" class="w-11 h-11 rounded inline-flex items-center justify-center text-light-on-surface-secondary">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </header>
+
+      <!-- Group 1 -->
+      <div class="flex flex-col gap-gutter-sm">
+        <span class="font-label text-label-sm text-light-on-surface-secondary uppercase">Основні документи клієнта</span>
+        <div class="flex items-center gap-gutter-xs">
+          <button type="button" aria-label="Перегляд Заяви" class="w-11 h-12 shrink-0 rounded border border-light-border-input text-light-primary inline-flex items-center justify-center"><span class="material-symbols-outlined text-lg">visibility</span></button>
+          <button type="button" class="flex-1 h-12 rounded bg-light-primary text-light-on-primary font-label text-label-md inline-flex items-center justify-center gap-1"><span class="material-symbols-outlined text-lg">description</span><span>Сформувати Заяву</span></button>
+        </div>
+        <div class="flex items-center gap-gutter-xs">
+          <button type="button" aria-label="Перегляд Талону" class="w-11 h-12 shrink-0 rounded border border-light-border-input text-light-primary inline-flex items-center justify-center"><span class="material-symbols-outlined text-lg">visibility</span></button>
+          <button type="button" class="flex-1 h-12 rounded bg-light-primary text-light-on-primary font-label text-label-md inline-flex items-center justify-center gap-1"><span class="material-symbols-outlined text-lg">confirmation_number</span><span>Сформувати Талон</span></button>
+        </div>
+      </div>
+
+      <!-- Group 2 -->
+      <div class="flex flex-col gap-gutter-sm">
+        <span class="font-label text-label-sm text-light-on-surface-secondary uppercase">Призначення адвоката</span>
+        <div class="flex items-center gap-gutter-xs">
+          <button type="button" aria-label="Перегляд" class="w-11 h-12 shrink-0 rounded border border-light-border-input text-light-primary inline-flex items-center justify-center"><span class="material-symbols-outlined text-lg">visibility</span></button>
+          <button type="button" class="flex-1 h-12 rounded border border-light-primary text-light-primary font-label text-label-md">Наказ на адвоката</button>
+        </div>
+        <div class="flex items-center gap-gutter-xs">
+          <button type="button" aria-label="Перегляд" class="w-11 h-12 shrink-0 rounded border border-light-border-input text-light-primary inline-flex items-center justify-center"><span class="material-symbols-outlined text-lg">visibility</span></button>
+          <button type="button" class="flex-1 h-12 rounded border border-light-primary text-light-primary font-label text-label-md">Службова на адвоката</button>
+        </div>
+      </div>
+
+      <!-- Group 3 -->
+      <div class="flex flex-col gap-gutter-sm">
+        <span class="font-label text-label-sm text-light-on-surface-secondary uppercase">Уповноваження працівника</span>
+        <div class="flex items-center gap-gutter-xs">
+          <button type="button" aria-label="Перегляд" class="w-11 h-12 shrink-0 rounded border border-light-border-input text-light-primary inline-flex items-center justify-center"><span class="material-symbols-outlined text-lg">visibility</span></button>
+          <button type="button" class="flex-1 h-12 rounded border border-light-primary text-light-primary font-label text-label-md">Наказ на працівника</button>
+        </div>
+        <div class="flex items-center gap-gutter-xs">
+          <button type="button" aria-label="Перегляд" class="w-11 h-12 shrink-0 rounded border border-light-border-input text-light-primary inline-flex items-center justify-center"><span class="material-symbols-outlined text-lg">visibility</span></button>
+          <button type="button" class="flex-1 h-12 rounded border border-light-primary text-light-primary font-label text-label-md">Службова на працівника</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+</body></html>

@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор Заяви та Талону БВПД</title>
+
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('theme') === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.documentElement.classList.add('dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Tinos:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Зовнішні бібліотеки -->
+    <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script type="module">
+        import * as shevchenkoModule from 'https://esm.sh/shevchenko';
+        window.shevchenko = shevchenkoModule.default || shevchenkoModule;
+    </script>
+
+    <!-- Модулі додатку -->
+    <script src="js/config.js"></script>
+    <script src="js/income-calculator.js"></script>
+    <script src="js/ai-helper.js"></script>
+    <script src="js/docx-generator.js"></script>
+    <script src="js/app.js"></script>
+</head>
+<body>
+
+<div id="toastMessage" role="alert" aria-live="polite"></div>
+
+<!-- Модальне вікно попереднього перегляду документа -->
+<div class="modal-overlay" id="previewModal" role="dialog" aria-modal="true" aria-labelledby="previewModalTitle">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title-group">
+                <h2 id="previewModalTitle">Попередній перегляд</h2>
+                <span class="doc-badge" id="previewDocBadge">Заява</span>
+            </div>
+            <div class="modal-header-actions">
+                <div class="zoom-controls" aria-label="Масштаб документа">
+                    <button type="button" class="zoom-btn" id="btnZoomOut" title="Зменшити масштаб">−</button>
+                    <span class="zoom-level" id="zoomLevelDisplay">100%</span>
+                    <button type="button" class="zoom-btn" id="btnZoomIn" title="Збільшити масштаб">+</button>
+                </div>
+                <button type="button" class="close-btn" id="closePreviewBtn" aria-label="Закрити">&times;</button>
+            </div>
+        </div>
+        <div class="modal-stage">
+            <div class="modal-body" id="previewDocContent">
+                <!-- Вміст формується динамічно -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <span class="modal-footer-caption" id="previewSheetCaption">Світла тема · A4</span>
+            <button type="button" class="btn-primary" id="btnDownloadFromPreview">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span>Завантажити .DOCX</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальне вікно налаштувань API-ключа Gemini -->
+<div class="modal-overlay" id="aiKeyModal" role="dialog" aria-modal="true" aria-labelledby="aiKeyModalTitle">
+    <div class="modal-content modal-sm">
+        <div class="modal-header">
+            <div class="modal-title-group">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ai);" aria-hidden="true">
+                    <path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/>
+                </svg>
+                <h2 id="aiKeyModalTitle">Налаштування API-ключа ШІ (Gemini)</h2>
+            </div>
+            <button type="button" class="close-btn" id="closeAiModalBtn" aria-label="Закрити">&times;</button>
+        </div>
+        <div class="ai-modal-body">
+            <div class="privacy-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;" aria-hidden="true">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <span>Ключ зберігається лише локально у вашому браузері; ПІБ клієнта анонімізується</span>
+            </div>
+            <div class="input-group" style="margin-bottom:0;">
+                <label for="aiApiKeyInput">API-ключ Google Gemini</label>
+                <div class="password-input-wrap">
+                    <input type="password" id="aiApiKeyInput" placeholder="Вставте ваш Gemini API-ключ..." autocomplete="off">
+                    <button type="button" class="toggle-vis-btn" id="btnToggleAiKeyVis" title="Показати / приховати ключ" aria-label="Показати або приховати ключ">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <p class="ai-key-hint">
+                Безкоштовний ключ можна отримати на <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com</a> (Create API key).
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-danger-ghost" id="btnModalResetAiKey">Скинути ключ</button>
+            <button type="button" class="btn-primary" id="btnModalSaveAiKey">Зберегти ключ</button>
+        </div>
+    </div>
+</div>
+
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
+
+<!-- Закріплена верхня панель застосунку -->
+<header class="app-header">
+    <div class="header-inner">
+        <div class="brand-cluster">
+            <div class="brand-mark" aria-hidden="true">
+                <svg width="18" height="22" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L14 7.5V16.5L17.5 13V7.5L20 5V16.5C20 19.5 17 21.5 14 22.5V26L12 28L10 26V22.5C7 21.5 4 19.5 4 16.5V5L6.5 7.5V13L10 16.5V7.5L12 2Z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+                    <path d="M7 18.5H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="brand-title-wrap">
+                <h1 class="app-title">
+                    <span class="app-title-full">Генератор документів на БВПД</span>
+                    <span class="app-title-short">Генератор БВПД</span>
+                </h1>
+                <span class="brand-badge">Система БВПД</span>
+            </div>
+        </div>
+
+        <input type="file" id="importProfileInput" accept=".json" style="display:none">
+
+        <!-- Десктопні кнопки утиліт і перемикач тем -->
+        <div class="header-actions-desktop">
+            <button type="button" class="btn-header" id="btnImportProfile" title="Завантажити дані клієнта з файлу">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <path d="M12 18v-6"/>
+                    <path d="M9 15l3-3 3 3"/>
+                </svg>
+                <span class="btn-header-label">Імпорт профілю</span>
+            </button>
+
+            <button type="button" class="btn-header" id="btnExportProfile" title="Зберегти дані клієнта у файл">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span class="btn-header-label">Експорт профілю</span>
+            </button>
+
+            <button type="button" class="btn-header ai-btn" id="btnOpenAiModal" title="Налаштування API-ключа Gemini">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ai);" aria-hidden="true">
+                    <path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/>
+                </svg>
+                <span class="btn-header-label">Налаштування ШІ</span>
+                <span class="ai-status-dot" id="aiKeyStatusDotDesktop" aria-hidden="true"></span>
+            </button>
+
+            <button type="button" class="btn-header danger" id="btnClearClientData" title="Очистити всі поля, крім даних працівника">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                </svg>
+                <span class="btn-header-label">Скинути дані</span>
+            </button>
+
+            <span class="header-divider" aria-hidden="true"></span>
+
+            <div class="theme-segmented" role="group" aria-label="Перемкнути тему">
+                <button type="button" class="theme-seg-btn active" id="btnThemeLight">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="4"/>
+                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                    </svg>
+                    <span>Світла</span>
+                </button>
+                <button type="button" class="theme-seg-btn" id="btnThemeDark">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    <span>Темна</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Компактні кнопки швидкого доступу на мобільних -->
+        <div class="header-actions-mobile">
+            <button type="button" class="btn-icon-header theme-btn" id="themeToggle" title="Перемкнути тему" aria-label="Перемкнути тему">
+                <svg id="mobileThemeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
+            <button type="button" class="btn-icon-header ai-icon-btn" id="btnMobileAiModal" title="Налаштування ШІ" aria-label="Налаштування ШІ">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/>
+                </svg>
+                <span class="ai-status-dot" id="aiKeyStatusDotMobile" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="btn-icon-header" id="btnMobileMoreMenu" title="Профіль та утиліти" aria-label="Меню профілю та утиліт" aria-expanded="false">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="1"/>
+                    <circle cx="19" cy="12" r="1"/>
+                    <circle cx="5" cy="12" r="1"/>
+                </svg>
+            </button>
+
+            <div class="mobile-utility-menu" id="mobileUtilityMenu" role="menu">
+                <button type="button" class="mobile-menu-item" id="btnMobileImportProfile" role="menuitem">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    <span>Імпорт профілю</span>
+                </button>
+                <button type="button" class="mobile-menu-item" id="btnMobileExportProfile" role="menuitem">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <span>Експорт профілю</span>
+                </button>
+                <button type="button" class="mobile-menu-item danger" id="btnMobileClearClientData" role="menuitem">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                    </svg>
+                    <span>Скинути дані</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Горизонтальна панель швидкого переходу між секціями (Mobile) -->
+<nav class="mobile-section-nav" id="mobileSectionNav" aria-label="Секції форми">
+    <a href="#sec-0" class="mobile-nav-chip active" data-section="sec-0">Центр</a>
+    <a href="#sec-1" class="mobile-nav-chip" data-section="sec-1">1. Заявник</a>
+    <a href="#sec-2" class="mobile-nav-chip" data-section="sec-2">2. Звернення</a>
+    <a href="#incomeSection" class="mobile-nav-chip" data-section="incomeSection">3. Доходи</a>
+    <a href="#sec-4" class="mobile-nav-chip" data-section="sec-4">4. Додатки</a>
+    <a href="#sec-5" class="mobile-nav-chip" data-section="sec-5">5. Підпис</a>
+    <a href="#sec-6" class="mobile-nav-chip" data-section="sec-6">6. Службові</a>
+    <a href="#sec-7" class="mobile-nav-chip" data-section="sec-7">7. Накази</a>
+    <a href="#sec-8" class="mobile-nav-chip" data-section="sec-8">8. Лист</a>
+    <a href="#sec-9" class="mobile-nav-chip" data-section="sec-9">9. Герб</a>
+</nav>
+
+<!-- 3-зональний робочий простір -->
+<div class="workspace-grid">
+    <!-- Ліва закріплена навігація (Desktop) -->
+    <aside class="nav-rail" id="desktopNavRail">
+        <nav class="nav-rail-list" aria-label="Навігація по секціях">
+            <a href="#sec-0" class="nav-link active" data-section="sec-0">
+                <span class="nav-link-text">Регіональний центр</span>
+                <span class="nav-status-icon done-icon" aria-hidden="true">✓</span>
+                <span class="nav-status-icon error-icon" aria-hidden="true">!</span>
+            </a>
+            <a href="#sec-1" class="nav-link" data-section="sec-1">
+                <span class="nav-link-text">1. Дані заявника</span>
+                <span class="nav-status-icon done-icon" aria-hidden="true">✓</span>
+                <span class="nav-status-icon error-icon" aria-hidden="true">!</span>
+            </a>
+            <a href="#sec-2" class="nav-link" data-section="sec-2">
+                <span class="nav-link-text">2. Суть звернення</span>
+                <span class="nav-status-icon done-icon" aria-hidden="true">✓</span>
+                <span class="nav-status-icon error-icon" aria-hidden="true">!</span>
+            </a>
+            <a href="#incomeSection" class="nav-link is-inactive-conditional" data-section="incomeSection">
+                <span class="nav-link-text">3. Доходи</span>
+                <span class="nav-pill">п. 1</span>
+            </a>
+            <a href="#sec-4" class="nav-link" data-section="sec-4">
+                <span class="nav-link-text">4. Додатки</span>
+                <span class="nav-status-icon done-icon" aria-hidden="true">✓</span>
+            </a>
+            <a href="#sec-5" class="nav-link" data-section="sec-5">
+                <span class="nav-link-text">5. Підпис</span>
+                <span class="nav-status-icon done-icon" aria-hidden="true">✓</span>
+            </a>
+            <a href="#sec-6" class="nav-link" data-section="sec-6">
+                <span class="nav-link-text">6. Службові відмітки</span>
+                <span class="nav-status-icon done-icon" aria-hidden="true">✓</span>
+                <span class="nav-status-icon error-icon" aria-hidden="true">!</span>
+            </a>
+            <a href="#sec-7" class="nav-link" data-section="sec-7">
+                <span class="nav-link-text">7. Накази</span>
+                <span class="nav-status-icon done-icon" aria-hidden="true">✓</span>
+            </a>
+            <a href="#sec-8" class="nav-link" data-section="sec-8">
+                <span class="nav-link-text">8. Службовий лист</span>
+                <span class="nav-status-icon done-icon" aria-hidden="true">✓</span>
+            </a>
+            <a href="#sec-9" class="nav-link" data-section="sec-9">
+                <span class="nav-link-text">9. Налаштування (Герб)</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Центральна колонка з формою -->
+    <main class="form-column">
+        <form id="legalForm">
+            <!-- Секція 0 -->
+            <section class="form-section" id="sec-0">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <span class="section-badge">00</span>
+                        <h3 class="section-title">Оберіть центр</h3>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="centerSelect">Регіональний центр</label>
+                    <select id="centerSelect">
+                        <option value="Південному міжрегіональному центру з надання безоплатної правничої допомоги">Південний міжрегіональний центр</option>
+                        <option value="Північному міжрегіональному центру з надання безоплатної правничої допомоги">Північний міжрегіональний центр</option>
+                        <option value="Західному міжрегіональному центру з надання безоплатної правничої допомоги">Західний міжрегіональний центр</option>
+                        <option value="Південно-Східному міжрегіональному центру з надання безоплатної правничої допомоги">Південно-Східний міжрегіональний центр</option>
+                        <option value="Східному міжрегіональному центру з надання безоплатної правничої допомоги">Східний міжрегіональний центр</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Секція 1 -->
+            <section class="form-section" id="sec-1">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <span class="section-badge">01</span>
+                        <h3 class="section-title">1. Дані заявника</h3>
+                    </div>
+                    <span class="section-meta-hint"><span class="req-star">*</span> обов'язкові поля</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="applicantName">ПІБ Заявника/Представника (у називному відмінку) <span class="req-star">*</span></label>
+                    <input type="text" id="applicantName" placeholder="Іванов Іван Іванович">
+                    <div class="spinner" id="spinnerApplicant"></div>
+                    <div id="applicantGenitiveHelper" class="inflection-helper">
+                        <label for="applicantNameGenitive">Родовий відмінок (Від кого? — для шапки заяви):</label>
+                        <input type="text" id="applicantNameGenitive" placeholder="Іванова Івана Івановича">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-group">
+                        <label for="applicantPhone">Телефон <span class="req-star">*</span></label>
+                        <input type="text" id="applicantPhone" placeholder="+38 (0__) ___-__-__">
+                    </div>
+                    <div class="input-group">
+                        <label for="applicantEmail">Адреса електронної пошти</label>
+                        <input type="text" id="applicantEmail" placeholder="email@example.com">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="applicantAddress">Адреса проживання <span class="req-star">*</span></label>
+                    <input type="text" id="applicantAddress" placeholder="вулиця, будинок, кв., місто, індекс">
+                </div>
+
+                <div class="row">
+                    <div class="input-group">
+                        <label for="notifyMethod">Повідомити мене</label>
+                        <select id="notifyMethod">
+                            <option value="телефоном">телефоном</option>
+                            <option value="засобами поштового зв'язку на адресу (вказану в зверненні адресу)">засобами поштового зв'язку на адресу (вказану в зверненні адресу)</option>
+                            <option value="особисто при відвідуванні бюро правничої допомоги">особисто при відвідуванні бюро правничої допомоги</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="applicantPassport">Документ особи <span class="req-star">*</span></label>
+                        <input type="text" id="applicantPassport" placeholder="Паспорт серії...">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секція 2 -->
+            <section class="form-section" id="sec-2">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <span class="section-badge">02</span>
+                        <h3 class="section-title">2. Суть звернення</h3>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="helpReceiverName">Кому надати допомогу (ПІБ у називному відмінку) <span class="req-star">*</span></label>
+                    <input type="text" id="helpReceiverName" placeholder="Іванов Іван Іванович">
+                    <div class="spinner" id="spinnerReceiver"></div>
+                    <div id="receiverDativeHelper" class="inflection-helper">
+                        <label for="helpReceiverNameDative">Давальний відмінок (Кому? — для тексту заяви та наказів):</label>
+                        <input type="text" id="helpReceiverNameDative" placeholder="Іванову Івану Івановичу">
+                    </div>
+                    <div id="receiverGenitiveHelper" class="inflection-helper">
+                        <label for="helpReceiverNameGenitive">Родовий відмінок (Кого? — для наказів та службових):</label>
+                        <input type="text" id="helpReceiverNameGenitive" placeholder="Іванова Івана Івановича">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Тип провадження</label>
+                    <div class="radio-group">
+                        <label class="radio-label is-selected"><input type="radio" name="caseType" value="civil" checked> <span>Цивільне / Адміністративне (КАСУ)</span></label>
+                        <label class="radio-label"><input type="radio" name="caseType" value="criminal"> <span>Кримінальне (Потерпілий)</span></label>
+                        <label class="radio-label"><input type="radio" name="caseType" value="admin"> <span>Адмін. правопорушення (КУпАП)</span></label>
+                    </div>
+                </div>
+
+                <div id="civilFieldsBlock">
+                    <div class="input-group">
+                        <label for="questionDetails">Вид правничої послуги <span class="req-star">*</span></label>
+                        <select id="questionDetails">
+                            <option value="" disabled selected>Оберіть вид послуги...</option>
+                            <option value="здійснення представництва інтересів в суді">здійснення представництва інтересів в суді</option>
+                            <option value="здійснення представництва інтересів">здійснення представництва інтересів</option>
+                            <option value="складення документів процесуального характеру">складення документів процесуального характеру</option>
+                            <option value="здійснення представництва інтересів в інших державних органах, органах місцевого самоврядування, перед іншими особами">здійснення представництва інтересів в інших державних органах, органах місцевого самоврядування, перед іншими особами</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="caseDetails">У справі <span class="req-star">*</span></label>
+                        <textarea id="caseDetails" placeholder="(коротко викладається суть правового питання)"></textarea>
+                    </div>
+                </div>
+
+                <div id="criminalFieldsBlock" class="hidden-field">
+                    <div class="row">
+                        <div class="input-group">
+                            <label for="erdrNum">Номер ЄРДР <span class="req-star">*</span></label>
+                            <input type="text" id="erdrNum" placeholder="Наприклад: 12025164490000371">
+                        </div>
+                        <div class="input-group">
+                            <label for="erdrDate">Дата внесення до ЄРДР <span class="req-star">*</span></label>
+                            <input type="date" id="erdrDate">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-group">
+                            <label for="criminalArticle">Кваліфікація (Стаття КК України) <span class="req-star">*</span></label>
+                            <input type="text" id="criminalArticle" placeholder="Наприклад: ч. 1 ст. 125 КК України">
+                        </div>
+                        <div class="input-group">
+                            <label for="courtCaseNum">Номер судової справи (якщо є)</label>
+                            <input type="text" id="courtCaseNum" placeholder="Наприклад: 522/21325/25">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="adminFieldsBlock" class="hidden-field">
+                    <div class="input-group">
+                        <label for="adminServiceType">Вид послуги (КУпАП)</label>
+                        <select id="adminServiceType">
+                            <option value="representation_appeal">здійснення представництва інтересів в суді (судове провадження не відкрито)</option>
+                            <option value="representation_court">здійснення представництва інтересів (судове провадження відкрито)</option>
+                            <option value="defense">з питання захисту</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="adminArticle">Кваліфікація (Стаття КУпАП)</label>
+                        <input type="text" id="adminArticle" placeholder="Наприклад: ч. 1 ст. 130">
+                    </div>
+
+                    <div class="input-group" id="adminCourtBlock" style="display: none;">
+                        <label for="adminCourtCaseNum">Номер судової справи</label>
+                        <input type="text" id="adminCourtCaseNum" placeholder="Наприклад: 522/26805/25">
+                    </div>
+
+                    <div class="row" id="adminAppealBlock">
+                        <div class="input-group">
+                            <label for="adminPostanovaSeries">Серія</label>
+                            <input type="text" id="adminPostanovaSeries" placeholder="Наприклад: ААА">
+                        </div>
+                        <div class="input-group">
+                            <label for="adminPostanovaNumber">№</label>
+                            <input type="text" id="adminPostanovaNumber" placeholder="Наприклад: 1193">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group" style="margin-top: 16px;">
+                    <div class="label-with-help">
+                        <label for="lawPointSearch">Категорія суб'єкта права (Пункт ч. 1 ст. 14 Закону) <span class="req-star">*</span></label>
+                        <span id="helpIconBtn" class="help-icon" title="Показати повний опис">?</span>
+                    </div>
+                    <div class="search-input-wrap">
+                        <input type="text" id="lawPointSearch" list="lawPointOptions" placeholder="Почніть вводити (наприклад: ВПО, 14)...">
+                        <button type="button" id="clearLawSearchBtn" class="clear-search-btn" title="Очистити поле" aria-label="Очистити категорію">✕</button>
+                    </div>
+                    <datalist id="lawPointOptions">
+                        <option value="п. 1 - Малозабезпечені особи"></option>
+                        <option value="п. 1 - Особи з інвалідністю"></option>
+                        <option value="п. 2 – Діти"></option>
+                        <option value="п. 9 – Засуджені та особи, взяті под варту"></option>
+                        <option value="п. 10 – Біженці"></option>
+                        <option value="п. 11 – Іноземці та особи без громадянства"></option>
+                        <option value="п. 12 – Особи без громадянства (заява)"></option>
+                        <option value="п. 13 – Особи без документів"></option>
+                        <option value="п. 14 – Внутрішньо переміщені особи (ВПО)"></option>
+                        <option value="п. 15 – Особи, які подали заяву на ВПО"></option>
+                        <option value="п. 16 – Жителі окупованих територій / зон бойових дій"></option>
+                        <option value="п. 17 – Ветерани війни та сім'ї загиблих"></option>
+                        <option value="п. 18 – Особи, які звернулися за статусом ветерана"></option>
+                        <option value="п. 19 – Особливі заслуги / жертви нацизму"></option>
+                        <option value="п. 20 – Реабілітовані"></option>
+                        <option value="п. 21 – Постраждалі від торгівлі людьми"></option>
+                        <option value="п. 22 – Постраждалі від домашнього насильства"></option>
+                        <option value="п. 23 – Потерпілі від катувань / сексуал. насильства"></option>
+                        <option value="п. 24 – Обмеження дієздатності"></option>
+                        <option value="п. 25 – Психіатрична допомога"></option>
+                        <option value="п. 26 – Викривачі корупції"></option>
+                        <option value="п. 27 – Повідомлення про активи (санкції)"></option>
+                        <option value="п. 28 – Позбавлені свободи (агресія РФ)"></option>
+                        <option value="п. 28-1 – Родичі зниклих безвісти"></option>
+                        <option value="п. 29 – Відновлення документів для компенсації"></option>
+                    </datalist>
+                    <input type="hidden" id="lawPointSelect" value="">
+                    <div id="lawDescription" class="law-description-box"></div>
+                </div>
+            </section>
+
+            <!-- Секція 3 -->
+            <section class="form-section hidden-section" id="incomeSection">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <span class="section-badge">03</span>
+                        <h3 class="section-title">3. Доходи</h3>
+                    </div>
+                    <span class="income-status-pill" id="incomeStatusPill">п. 1 — Розрахунок</span>
+                </div>
+
+                <p class="helper-text required-note">* Для обраної категорії заповнення доходів є обов'язковим.</p>
+
+                <div class="row">
+                    <div class="input-group">
+                        <div id="periodQuarterBlock" class="hidden-field">
+                            <label for="incomePeriodQuarter">Період (квартал)</label>
+                            <select id="incomePeriodQuarter">
+                                <option value="1 квартал">1 квартал</option>
+                                <option value="2 квартал">2 квартал</option>
+                                <option value="3 квартал">3 квартал</option>
+                                <option value="4 квартал">4 квартал</option>
+                            </select>
+                        </div>
+                        <div id="periodMonthBlock" class="hidden-field">
+                            <label for="incomePeriodMonth">Період (місяць)</label>
+                            <select id="incomePeriodMonth">
+                                <option value="січень">січень</option>
+                                <option value="лютий">лютий</option>
+                                <option value="березень">березень</option>
+                                <option value="квітень">квітень</option>
+                                <option value="травень">травень</option>
+                                <option value="червень">червень</option>
+                                <option value="липень">липень</option>
+                                <option value="серпень">серпень</option>
+                                <option value="вересень">вересень</option>
+                                <option value="жовтень">жовтень</option>
+                                <option value="листопад">листопад</option>
+                                <option value="грудень">грудень</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="incomeYear">Рік</label>
+                        <input type="number" id="incomeYear" value="2026">
+                    </div>
+                </div>
+
+                <div class="row hidden-field" id="workingCapacityRow" style="display: none;">
+                    <div class="input-group" style="grid-column: 1 / -1;">
+                        <label for="workingCapacitySelect">Статус працездатності заявника (для перевірки лімітів)</label>
+                        <select id="workingCapacitySelect">
+                            <option value="able">Працездатна особа (поріг 6 656 грн)</option>
+                            <option value="disabled">Особа, яка втратила працездатність (поріг 5 190 грн)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Перемикач вкладок над полями доходів -->
+                <div id="incomeCalcTabsContainer" class="hidden-field" style="display: none;">
+                    <div class="income-calc-tabs">
+                        <button type="button" class="income-tab-btn active" id="tabSimpleCalc">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="4" y="2" width="16" height="20" rx="2"/>
+                                <line x1="8" y1="6" x2="16" y2="6"/>
+                                <line x1="8" y1="10" x2="8" y2="10"/>
+                                <line x1="12" y1="10" x2="12" y2="10"/>
+                                <line x1="16" y1="10" x2="16" y2="10"/>
+                            </svg>
+                            <span>Простий розрахунок</span>
+                        </button>
+                        <button type="button" class="income-tab-btn" id="tabExtendedCalc">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 3v18"/>
+                                <path d="M5 7h14"/>
+                                <path d="M3 14l2-7 2 7a2 2 0 0 1-4 0z"/>
+                                <path d="M17 14l2-7 2 7a2 2 0 0 1-4 0z"/>
+                            </svg>
+                            <span>Розширений розрахунок (за Методикою № 1445/5)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Вкладка 1: Простий розрахунок -->
+                <div class="row-3 hidden-field" id="threeMonthsBlock" style="display: none;">
+                    <div class="input-group">
+                        <label id="labelMonth1" for="incomeMonth1">Місяць 1</label>
+                        <input type="number" id="incomeMonth1" class="month-income" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label id="labelMonth2" for="incomeMonth2">Місяць 2</label>
+                        <input type="number" id="incomeMonth2" class="month-income" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label id="labelMonth3" for="incomeMonth3">Місяць 3</label>
+                        <input type="number" id="incomeMonth3" class="month-income" placeholder="0.00" step="0.01">
+                    </div>
+                </div>
+
+                <!-- Вкладка 2: Розширений розрахунок за Методикою № 1445/5 -->
+                <div id="extendedCalcBlock" class="hidden-field" style="display: none; margin-bottom: 16px;">
+                    <div class="calc-special-modes">
+                        <div class="special-mode-title">Спеціальні режими розрахунку (п. 3 Методики № 1445/5)</div>
+                        <div class="row" style="margin-bottom: 0;">
+                            <div class="input-group">
+                                <label for="fopStatusSelect">Статус ФОП (абз. 1–4 пп. 6 п. 3)</label>
+                                <select id="fopStatusSelect">
+                                    <option value="none">Не є ФОП / ФОП на загальній системі</option>
+                                    <option value="fop1">ФОП 1 група ЄП (норматив 8 647,00 грн/міс)</option>
+                                    <option value="fop2">ФОП 2 група ЄП (норматив 17 294,00 грн/міс)</option>
+                                    <option value="fop3">ФОП 3 група ЄП (норматив 25 941,00 грн/міс)</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="display: flex; flex-direction: column; justify-content: center;">
+                                <label class="income-checkbox-label">
+                                    <input type="checkbox" id="pensionFirstTimeCheck">
+                                    <span>Вперше призначено пенсію / звільнення у розрахунковому періоді (пп. 5 п. 3)</span>
+                                </label>
+                                <div id="pensionFirstTimeBlock" style="display: none; margin-top: 8px;">
+                                    <input type="number" id="pensionFirstTimeAmount" placeholder="Розмір щомісячної пенсії (грн)" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3 блоки помісячного введення (на мобільних — вертикальний акордеон) -->
+                    <div class="months-cards-container">
+                        <!-- Картка Місяць 1 -->
+                        <div class="month-card" id="monthCard1">
+                            <div class="month-card-header" role="button" tabindex="0" aria-expanded="true">
+                                <span class="month-card-title-wrap">
+                                    <span class="month-chevron" aria-hidden="true">▸</span>
+                                    <span class="month-card-title" id="monthTitle1">Місяць 1</span>
+                                </span>
+                                <span class="month-card-summary">Враховано за місяць: <span id="monthAccounted1">0,00</span> грн</span>
+                            </div>
+                            <div class="month-card-body">
+                                <div class="income-rows-list" id="incomeRowsContainer1"></div>
+                                <button type="button" class="btn-add-income" id="btnAddIncome1">+ Додати код доходу</button>
+                            </div>
+                        </div>
+
+                        <!-- Картка Місяць 2 -->
+                        <div class="month-card is-collapsed" id="monthCard2">
+                            <div class="month-card-header" role="button" tabindex="0" aria-expanded="false">
+                                <span class="month-card-title-wrap">
+                                    <span class="month-chevron" aria-hidden="true">▸</span>
+                                    <span class="month-card-title" id="monthTitle2">Місяць 2</span>
+                                </span>
+                                <span class="month-card-summary">Враховано за місяць: <span id="monthAccounted2">0,00</span> грн</span>
+                            </div>
+                            <div class="month-card-body">
+                                <div class="income-rows-list" id="incomeRowsContainer2"></div>
+                                <button type="button" class="btn-add-income" id="btnAddIncome2">+ Додати код доходу</button>
+                            </div>
+                        </div>
+
+                        <!-- Картка Місяць 3 -->
+                        <div class="month-card is-collapsed" id="monthCard3">
+                            <div class="month-card-header" role="button" tabindex="0" aria-expanded="false">
+                                <span class="month-card-title-wrap">
+                                    <span class="month-chevron" aria-hidden="true">▸</span>
+                                    <span class="month-card-title" id="monthTitle3">Місяць 3</span>
+                                </span>
+                                <span class="month-card-summary">Враховано за місяць: <span id="monthAccounted3">0,00</span> грн</span>
+                            </div>
+                            <div class="month-card-body">
+                                <div class="income-rows-list" id="incomeRowsContainer3"></div>
+                                <button type="button" class="btn-add-income" id="btnAddIncome3">+ Додати код доходу</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-3" id="incomeResultsBlock">
+                    <div class="input-group">
+                        <label for="incomeTotalAmount">Сума (грн)</label>
+                        <input type="text" id="incomeTotalAmount" placeholder="Наприклад: 13500.00">
+                    </div>
+                    <div class="input-group" id="averageAmountGroup">
+                        <label for="incomeAverageAmount">Середньомісячна (грн)</label>
+                        <input type="text" id="incomeAverageAmount" placeholder="Наприклад: 4500.00">
+                    </div>
+                    <div class="input-group">
+                        <label for="incomeSource">Джерело</label>
+                        <input type="text" id="incomeSource" placeholder="пенсія, заробітна плата...">
+                    </div>
+                </div>
+
+                <!-- Статус норми доходу -->
+                <div id="incomeOkBanner" class="income-ok-banner" style="display: none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;" aria-hidden="true">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span id="incomeOkText"></span>
+                </div>
+
+                <!-- Блок попередження про перевищення ліміту -->
+                <div id="incomeWarning" class="income-warning-box" style="display: none;">
+                    <div class="warning-head">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;" aria-hidden="true">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                        <div id="incomeWarningSummary">
+                            <p class="warning-summary-title">Увага! Зазначений дохід перевищує встановлений законом поріг (<strong id="incomeLimitSpan">0</strong> <strong>грн</strong>) для цієї категорії.</p>
+                        </div>
+                    </div>
+                    <div id="incomeWarningDetails" style="margin-top: 10px;"></div>
+                </div>
+            </section>
+
+            <!-- Секція 4 -->
+            <section class="form-section" id="sec-4">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <span class="section-badge">04</span>
+                        <h3 class="section-title" id="titleAttachments">4. Додатки</h3>
+                    </div>
+                    <button type="button" class="btn-icon btn-add" id="btnAddAttachment">+ Додати рядок</button>
+                </div>
+                <div id="attachmentsContainer"></div>
+            </section>
+
+            <!-- Секція 5 -->
+            <section class="form-section" id="sec-5">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <span class="section-badge">05</span>
+                        <h3 class="section-title" id="titleSignature">5. Підпис</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-group">
+                        <label for="docDate">Дата</label>
+                        <input type="date" id="docDate">
+                    </div>
+                    <div class="input-group">
+                        <label for="signerName">П.І.Б., підпис заявника/представника</label>
+                        <input type="text" id="signerName" placeholder="Заповнюється автоматично" readonly>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секція 6 -->
+            <section class="form-section" id="sec-6">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <span class="section-badge">06</span>
+                        <h3 class="section-title">6. Службові відмітки</h3>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="workerName">ПІБ працівника, який прийняв заяву (у називному) <span class="req-star">*</span></label>
+                    <input type="text" id="workerName" placeholder="Петров Петро Петрович">
+                    <div class="spinner" id="spinnerWorker"></div>
+                    <div id="workerGenitiveHelper" class="inflection-helper">
+                        <label for="workerNameGenitive">Родовий відмінок (Кого? — для службових):</label>
+                        <input type="text" id="workerNameGenitive" placeholder="Петрова Петра Петровича">
+                    </div>
+                </div>
+                <div class="row-3">
+                    <div class="input-group">
+                        <label for="rkzkNum">№ РКЗК <span class="req-star">*</span></label>
+                        <input type="text" id="rkzkNum" placeholder="Наприклад: 2026-1234568">
+                    </div>
+                    <div class="input-group">
+                        <label for="regNum">Реєстраційний номер звернення</label>
+                        <input type="text" id="regNum" placeholder="Наприклад: 123/4ОБ">
+                    </div>
+                    <div class="input-group">
+                        <label for="regDate">Дата реєстрації звернення</label>
+                        <input type="date" id="regDate">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секція 7 -->
+            <section class="form-section" id="sec-7">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <span class="section-badge">07</span>
+                        <h3 class="section-title">7. Накази</h3>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="orderSigner">Підписант</label>
+                    <select id="orderSigner">
+                        <option value="Сергій МЕРЗЛЯКОВ">Сергій МЕРЗЛЯКОВ</option>
+                        <option value="Сергій КУДРЯВЦЕВ">Сергій КУДРЯВЦЕВ</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Секція 8 -->
+            <section class="form-section" id="sec-8">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <span class="section-badge">08</span>
+                        <h3 class="section-title">8. Службовий лист</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-group">
+                        <label for="letterPosition">Посада працівника</label>
+                        <select id="letterPosition">
+                            <option value="помічник юриста">помічник юриста</option>
+                            <option value="юрист">юрист</option>
+                            <option value="начальник">начальник</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="letterBureau">Назва бюро</label>
+                        <select id="letterBureau">
+                            <option value="Одеського бюро правничої допомоги №1">Одеського бюро правничої допомоги №1</option>
+                            <option value="Одеського бюро правничої допомоги №3">Одеського бюро правничої допомоги №3</option>
+                            <option value="Одеського бюро правничої допомоги №4">Одеського бюро правничої допомоги №4</option>
+                            <option value="Доброславського бюро правничої допомоги">Доброславського бюро правничої допомоги</option>
+                            <option value="Біляївського бюро правничої допомоги">Біляївського бюро правничої допомоги</option>
+                            <option value="Овідіопольського бюро правничої допомоги">Овідіопольського бюро правничої допомоги</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="ai-header-bar">
+                        <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 220px;">
+                            <label for="letterAdditionalInfo" style="margin-bottom: 0;">Зазначити додаткову інформацію (тільки для службового листа на адвоката)</label>
+                            <span id="helpAiBtn" class="help-icon" title="Як налаштувати ШІ?">?</span>
+                        </div>
+                        <div class="ai-actions">
+                            <button type="button" class="btn-ai" id="btnAIFormalize" title="Перетворити чернетку на офіційне обґрунтування">✨ Офіційно</button>
+                            <button type="button" class="btn-ai" id="btnAIProofread" title="Виправити орфографічні та стилістичні помилки">📝 Коректор</button>
+                        </div>
+                    </div>
+
+                    <div id="aiHelpDescription" class="law-description-box" style="margin-top: 0; margin-bottom: 12px;">
+                        <strong style="color: var(--primary);">Як увімкнути функції штучного інтелекту (ШІ)?</strong><br>
+                        <div style="margin-top: 6px;">Оскільки файл працює локально на вашому комп'ютері, для роботи ШІ потрібен особистий безкоштовний ключ доступу:</div>
+                        <ol style="margin-top: 6px; margin-bottom: 8px; padding-left: 20px;">
+                            <li>Перейдіть на сайт <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com</a> (увійдіть через Google-акаунт).</li>
+                            <li>Натисніть кнопку <b>"Create API key"</b> (Створити API ключ).</li>
+                            <li>Скопіюйте згенерований ключ та вставте його у вікні «Налаштування ШІ» вгорі або при натисканні «✨ Офіційно» / «📝 Коректор».</li>
+                        </ol>
+                        <span style="font-size: 12px; color: var(--text-secondary);">Ключ зберігається лише у вашому браузері і нікуди не передається. <a href="#" id="resetAiKeyBtn" class="reset-link">Скинути налаштування ключа</a>.</span>
+                    </div>
+
+                    <div class="ai-textarea-wrap">
+                        <textarea id="letterAdditionalInfo" placeholder="Наприклад: Справа потребує підготовки до судового розгляду..."></textarea>
+                        <div id="aiLoadingOverlay" class="ai-loading-overlay"><div class="spinner-ai"></div></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секція 9 -->
+            <section class="form-section form-section-emblem" id="sec-9">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <span class="section-badge">09</span>
+                        <h3 class="section-title">9. Налаштування (Герб)</h3>
+                    </div>
+                </div>
+                <div class="emblem-layout">
+                    <div id="dropZone" class="drop-zone">
+                        <span id="dropZoneText">Перетягніть файл герба сюди (png, jpg)</span>
+                        <input type="file" id="logoUpload" accept="image/png, image/jpeg" style="display: none;">
+                    </div>
+                    <div id="logoPreview" class="logo-preview-card">
+                        <img id="logoPreviewImg" class="logo-preview-img" alt="Герб">
+                        <button type="button" id="btnClearLogo" class="btn-reset-logo" title="Скинути герб до стандартного">Скинути</button>
+                    </div>
+                </div>
+            </section>
+        </form>
+    </main>
+
+    <!-- Права панель формування документів (Desktop) / Висувна шторка Bottom Sheet (Mobile) -->
+    <aside class="actions-drawer" id="actionsDrawer" aria-label="Формування документів">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="drawer-header">
+            <h2 class="drawer-title">Формування документів</h2>
+            <button type="button" class="btn-close-sheet" id="closeActionsSheetBtn" aria-label="Закрити панель">&times;</button>
+        </div>
+
+        <div class="drawer-groups">
+            <div class="drawer-group">
+                <span class="drawer-group-label">Основні документи клієнта</span>
+                <div class="action-row">
+                    <button type="button" class="btn-preview-icon" id="btnPreviewDoc" title="Перегляд Заяви" aria-label="Перегляд Заяви">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="btn-generate" id="btnGenerateDoc">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                        </svg>
+                        <span>Сформувати Заяву</span>
+                    </button>
+                </div>
+                <div class="action-row">
+                    <button type="button" class="btn-preview-icon" id="btnPreviewTalon" title="Перегляд Талону" aria-label="Перегляд Талону">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="btn-generate" id="btnGenerateTalon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <span>Сформувати Талон</span>
+                    </button>
+                </div>
+            </div>
+
+            <hr class="drawer-divider">
+
+            <div class="drawer-group">
+                <span class="drawer-group-label">Призначення адвоката</span>
+                <div class="action-row">
+                    <button type="button" class="btn-preview-icon" id="btnPreviewOrderLawyer" title="Перегляд наказу на адвоката" aria-label="Перегляд наказу на адвоката">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="btn-generate btn-secondary" id="btnGenerateOrderLawyer">Наказ на адвоката</button>
+                </div>
+                <div class="action-row">
+                    <button type="button" class="btn-preview-icon" id="btnPreviewLetterLawyer" title="Перегляд службової на адвоката" aria-label="Перегляд службової на адвоката">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="btn-generate btn-secondary" id="btnGenerateLetterLawyer">Службова на адвоката</button>
+                </div>
+            </div>
+
+            <hr class="drawer-divider">
+
+            <div class="drawer-group">
+                <span class="drawer-group-label">Уповноваження працівника</span>
+                <div class="action-row">
+                    <button type="button" class="btn-preview-icon" id="btnPreviewOrderEmployee" title="Перегляд наказу на працівника" aria-label="Перегляд наказу на працівника">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="btn-generate btn-secondary" id="btnGenerateOrderEmployee">Наказ на працівника</button>
+                </div>
+                <div class="action-row">
+                    <button type="button" class="btn-preview-icon" id="btnPreviewLetterEmployee" title="Перегляд службової на працівника" aria-label="Перегляд службової на працівника">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="btn-generate btn-secondary" id="btnGenerateLetterEmployee">Службова на працівника</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="drawer-footer">Формат експорту: .DOCX (ДСТУ / Times New Roman)</div>
+    </aside>
+</div>
+
+<!-- Закріплена нижня мобільна панель дій -->
+<div class="mobile-sticky-bar" id="mobileStickyBar">
+    <button type="button" class="btn-mobile-preview" id="btnMobileQuickPreview">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <span>Перегляд</span>
+    </button>
+    <button type="button" class="btn-mobile-docs" id="btnOpenActionsSheet">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        <span>Документи (6) ▴</span>
+    </button>
+</div>
+
+</body>
+</html>
